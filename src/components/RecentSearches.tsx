@@ -1,4 +1,6 @@
 import { FaClock, FaUser } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
+import { fetchGithubUser } from "../api/github";
 
 type RecentSearchProps = {
   users: string[];
@@ -6,6 +8,7 @@ type RecentSearchProps = {
 };
 
 function RecentSearches({ users, onClick }: RecentSearchProps) {
+  const queryClient = useQueryClient();
   return (
     <div className="recent-searches">
       <div className="recent-header">
@@ -17,6 +20,12 @@ function RecentSearches({ users, onClick }: RecentSearchProps) {
           <li key={user}>
             <button
               onClick={() => onClick(user)}
+              onMouseEnter={() => {
+                queryClient.prefetchQuery({
+                  queryKey: ["users", user],
+                  queryFn: () => fetchGithubUser(user),
+                });
+              }}
             >
               <FaUser className="user-icon"/>
               {user}
